@@ -1,4 +1,4 @@
-CREATE PROCEDURE 1_4_Carga_Hechos ()
+CREATE PROCEDURE 1_4_0_Carga_Hechos ()
 BEGIN
   /* Carga de la tabla auxiliar AUX_INSERTA_FACT_VENTA */
   CALL 1_4_1_Carga_AUX_INSERTA_FACT_VENTA();

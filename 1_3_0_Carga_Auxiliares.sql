@@ -1,4 +1,4 @@
-CREATE PROCEDURE 1_3_Carga_Auxiliares ()
+CREATE PROCEDURE 1_3_0_Carga_Auxiliares ()
 BEGIN
 
   /* Carga de AUX_MMTT */

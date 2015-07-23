@@ -1,4 +1,4 @@
-CREATE PROCEDURE 1_2_Carga_Dimensiones ()
+CREATE PROCEDURE 1_2_0_Carga_Dimensiones ()
 BEGIN
 
   /* Carga de DIM_FECHA */
