@@ -1,4 +1,4 @@
-CREATE PROCEDURE 10_Carga_Principal ()
+CREATE PROCEDURE 1_0_Carga_Principal ()
 BEGIN
   /* Registro de inicio de carga */ 
   DECLARE cargando int unsigned default 0;
@@ -11,16 +11,16 @@ BEGIN
   COMMIT;
   
   /* Carga de Staging */
-  CALL 11_Carga_Staging();
+  CALL 1_1_Carga_Staging();
   
   /* Carga de Dimensiones */
-  CALL 12_Carga_Dimensiones();
+  CALL 1_2_Carga_Dimensiones();
   
   /* Carga de Auxiliares */
-  CALL 13_Carga_Auxiliares();
+  CALL 1_3_Carga_Auxiliares();
   
   /* Carga de Hechos */
-  call 14_Carga_Hechos();
+  call 1_4_Carga_Hechos();
   
   /* Registro de fin de carga */
   UPDATE STAGING.AUX_CARGA_DW SET FIN=current_timestamp WHERE ID_FECHA=current_date AND ID_CARGA=1;

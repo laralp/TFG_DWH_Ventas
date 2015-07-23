@@ -1,4 +1,4 @@
-CREATE PROCEDURE 20_Borrado_Historicos ()
+CREATE PROCEDURE 2_0_Borrado_Historicos ()
 BEGIN
   /* Se borran de AUX_CARGA_DW los registros anteriores a 30 días */
   DELETE FROM STAGING.AUX_CARGA_DW WHERE ID_FECHA<DATEADD(current_date, interval -30 day);

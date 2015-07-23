@@ -1,7 +1,6 @@
-CREATE PROCEDURE 14_Carga_Hechos ()
+CREATE PROCEDURE 1_4_1_Carga_AUX_INSERTA_FACT_VENTA ()
 BEGIN
-
-  /* 1. Se obtiene la información de provincia, país y zona a partir de la tienda en el operacional, puesto que se desnormalizan en su paso al DWH en la tabla de hechos */
+  /* 1. Se obtiene la informaciÃ³n de provincia, paÃ­s y zona a partir de la tienda en el operacional, puesto que se desnormalizan en su paso al DWH en la tabla de hechos */
   CREATE TEMPORARY TABLE temp_tienda_zona_prov_pais (
     ID_TIENDA int,
 	ID_PROVINCIA int,
@@ -15,7 +14,7 @@ BEGIN
 	LEFT JOIN TIENDA_ZONA@operacional TZ ON T.ID_TIENDA=TZ.ID_TIENDA;
   COMMIT; 
   
-  /* 2. Se insertan en AUX_INSERTA_FACT_VENTA los datos ya transformados, con los ID propios del Datawarehouse para que la posterior inserción en la tabla de FACT_VENTA sea lo más limpia posible */
+  /* 2. Se insertan en AUX_INSERTA_FACT_VENTA los datos ya transformados, con los ID propios del Datawarehouse para que la posterior inserciÃ³n en la tabla de FACT_VENTA sea lo mÃ¡s limpia posible */
   TRUNCATE TABLE STAGING.AUX_INSERTA_FACT_VENTA;
   
   INSERT INTO STAGING.AUX_INSERTA_FACT_VENTA (COD_VENTA, FECHA_HORA, ID_FECHA, ID_MES, ID_TRIMESTRE, ID_SEMESTRE, ID_ANO, ID_ARTICULO, ID_TIPO_PRODUCTO, ID_MARCA, ID_TIENDA, ID_PROVINCIA, ID_PAIS, ID_ZONA, ID_SECCION, ID_PERIODO, ID_CAMPANA, PRECIO_UNITARIO, UNIDADES, PRECIO, FECHA_ALTA, USUARIO_ALTA)
@@ -103,21 +102,4 @@ BEGIN
 	LEFT JOIN MAESTROS.DIM_PROVINCIA PR ON TMP.ID_PROVINCIA=PR.COD_PROVINCIA
 	;
   COMMIT;
-  
-  /* 3. Se borran de FACT_VENTA aquellos registros cuyo COD_VENTA esté incluido en los registros que están en proceso según la tabla de control*/
-  DELETE FROM COMERCIAL.FACT_VENTA FV
-  INNER JOIN CONTROL_VENTA@operacional V 
-  ON FV.COD_VENTA=V.ID_VENTA
-  WHERE CARGA_DW=2;
-  COMMIT;
-  
-  /* 4.  Se insertan en FACT_VENTA todos los registros que ya se han preparado en AUX_INSERTA_FACT_VENTA */
-  INSERT INTO COMERCIAL.FACT_VENTA (COD_VENTA, FECHA_HORA, ID_FECHA, ID_MES, ID_TRIMESTRE, ID_SEMESTRE, ID_ANO, ID_ARTICULO, ID_TIPO_PRODUCTO, ID_MARCA, ID_TIENDA, ID_PROVINCIA, ID_PAIS, ID_ZONA, ID_SECCION, ID_PERIODO, ID_CAMPANA, PRECIO_UNITARIO, UNIDADES, PRECIO, FECHA_ALTA, USUARIO_ALTA)
-    SELECT COD_VENTA, FECHA_HORA, ID_FECHA, ID_MES, ID_TRIMESTRE, ID_SEMESTRE, ID_ANO, ID_ARTICULO, ID_TIPO_PRODUCTO, ID_MARCA, ID_TIENDA, ID_PROVINCIA, ID_PAIS, ID_ZONA, ID_SECCION, ID_PERIODO, ID_CAMPANA, PRECIO_UNITARIO, UNIDADES, PRECIO, current_timestamp, current_user
-    FROM STAGING.AUX_INSERTA_FACT_VENTA;
-  COMMIT;
-  
-  /* 5. Se trunca la tabla AUX_INSERTA_FACT_VENTA para evitar que ocupe volumen */
-  TRUNCATE TABLE STAGING.AUX_INSERTA_FACT_VENTA;
-  
 END;

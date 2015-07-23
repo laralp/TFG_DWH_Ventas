@@ -1,0 +1,19 @@
+CREATE PROCEDURE 1_2_10_Carga_DIM_SECCION ()
+BEGIN
+  /* Se actualizan los registros que coinciden en la tabla operacional con la dimensión */
+  UPDATE COMERCIAL.DIM_SECCION 
+  INNER JOIN SECCION@operacional S
+  ON COD_SECCION=S.ID_SECCION
+  SET DESC_SECCION=S.DESCRIPCION,
+	  FECHA_MODIFICACION=current_timestamp,
+	  USUARIO_MODIFICACION=current_user;
+  COMMIT;
+  /* Se insertan los registros nuevos */
+  INSERT INTO COMERCIAL.DIM_SECCION (COD_SECCION, DESC_SECCION, FECHA_ALTA, USUARIO_ALTA)
+    SELECT S.ID_SECCION, S.DESCRIPCION, current_timestamp, current_user
+    FROM SECCION@operacional S
+    LEFT JOIN COMERCIAL.DIM_SECCION DS
+    ON S.ID_SECCION=DS.COD_SECCION
+    WHERE DS.ID_SECCION IS NULL;   
+  COMMIT;
+END;
